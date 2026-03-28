@@ -33,6 +33,7 @@ public class Token {
     }
 
     public void setValue(String value){
+        System.out.println("Setting value...");
         this.value = value;
     }
 
