@@ -6,7 +6,7 @@
  */
 public class Token {
 
-    private TokenType type;
+    private TokenType type; // what is TokenType??
     private String value;
     private int line;
 
