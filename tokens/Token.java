@@ -17,7 +17,7 @@ public class Token {
     }
 
     public TokenType getType() {
-        System.out.println("Getting type...");
+        System.out.println("Getting type...");// please check on this line I think it is not making any sence here
         return type;
     }
 
@@ -32,11 +32,10 @@ public class Token {
         return line;
     }
 
-    public void setValue(String value){
+    public void setValue(String value){ // and also remove this seter method. I think it will not the corrct way.
         System.out.println("Setting value...");
-        this.value = value;
+        this.value;
     }
-
     @Override
     public String toString() {
         String result = "";
