@@ -29,3 +29,8 @@ public class Environment {
         return variables.get(name);
     }
 }
+
+
+// Using IllegalArgumentException instead of RuntimeException would make the error more specific.
+// You could mark method parameters as final to prevent accidental reassignment.
+
