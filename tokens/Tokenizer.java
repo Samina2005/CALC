@@ -108,6 +108,13 @@ public class Tokenizer {
                     tokens.add(new Token(TokenType.GT, ">", line));
                     pos++;
                     break;
+                case '?':
+                    tokens.add(new Token(TokenType.IF, "?", line));
+                    break;
+                
+                case '@':
+                    tokens.add(new Token(TokenType.REPEAT, "@", line));
+                    break;
                 default:
                     throw new RuntimeException(
                         "Unexpected character '" + current + "' at line " + line
