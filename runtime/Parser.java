@@ -239,25 +239,54 @@ public class Parser {
     /**
      * Parse a primary expression: NUMBER, STRING, or IDENTIFIER.
      */
-    private Expression parsePrimary() {
-        Token token = current();
+    // private Expression parsePrimary() {
+    //     Token token = current();
 
-        switch (token.getType()) {
-            case NUMBER:
-                advance();
-                return new NumberNode(Double.parseDouble(token.getValue()));
-            case STRING:
-                advance();
-                return new StringNode(token.getValue());
-            case IDENTIFIER:
-                advance();
-                return new VariableNode(token.getValue());
-            default:
-                throw new RuntimeException("Expected a number, string, or variable "
-                        + "but found " + token + " at line " + token.getLine());
-        }
+    //     switch (token.getType()) {
+    //         case NUMBER:
+    //             advance();
+    //             return new NumberNode(Double.parseDouble(token.getValue()));
+    //         case STRING:
+    //             advance();
+    //             return new StringNode(token.getValue());
+    //         case IDENTIFIER:
+    //             advance();
+    //             return new VariableNode(token.getValue());
+    //         default:
+    //             throw new RuntimeException("Expected a number, string, or variable "
+    //                     + "but found " + token + " at line " + token.getLine());
+    //     }
+    // }
+        private Expression parsePrimary() {
+    Token token = current();
+
+    // ✅ HANDLE UNARY MINUS HERE
+    if (token.getType() == TokenType.MINUS) {
+        advance(); // consume '-'
+        Expression expr = parsePrimary();
+        return new BinaryOpNode(new NumberNode(0), "-", expr);
     }
 
+    switch (token.getType()) {
+        case NUMBER:
+            advance();
+            return new NumberNode(Double.parseDouble(token.getValue()));
+
+        case STRING:
+            advance();
+            return new StringNode(token.getValue());
+
+        case IDENTIFIER:
+            advance();
+            return new VariableNode(token.getValue());
+
+        default:
+            throw new RuntimeException(
+                "Expected a number, string, or variable but found "
+                + token + " at line " + token.getLine()
+            );
+    }
+}
     // ================================================================
     //  Utility Methods
     // ================================================================
