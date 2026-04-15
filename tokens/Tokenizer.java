@@ -3,6 +3,11 @@ package tokens;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Tokenizer reads the raw source code as a single String and produces
+ * a List of Tokens. It walks through the characters one at a time, recognises
+ * patterns, and emits a Token for each one.
+ */
 public class Tokenizer {
     private final String source;
     private int pos;
@@ -14,19 +19,25 @@ public class Tokenizer {
         this.line = 1;
     }
 
+    /**
+     * Walk through source character by character.
+     * When you recognise a complete token, add it to a list.
+     * At the end, add a token of type EOF.
+     * Return the completed list.
+     */
     public List<Token> tokenize() {
         List<Token> tokens = new ArrayList<>();
 
         while (pos < source.length()) {
             char current = source.charAt(pos);
 
-            // skip whitespace
+            // Skip spaces and tabs (but NOT newlines)
             if (current == ' ' || current == '\t' || current == '\r') {
                 pos++;
                 continue;
             }
 
-            // newline
+            // Newlines
             if (current == '\n') {
                 tokens.add(new Token(TokenType.NEWLINE, "\\n", line));
                 line++;
@@ -34,7 +45,7 @@ public class Tokenizer {
                 continue;
             }
 
-            // comments
+            // Single-line comments (optional extension — skip lines starting with #)
             if (current == '#') {
                 while (pos < source.length() && source.charAt(pos) != '\n') {
                     pos++;
@@ -42,25 +53,25 @@ public class Tokenizer {
                 continue;
             }
 
-            // string
+            // String literals: "..."
             if (current == '"') {
                 tokens.add(readString());
                 continue;
             }
 
-            // number
+            // Numbers: digits and decimals
             if (Character.isDigit(current)) {
                 tokens.add(readNumber());
                 continue;
             }
 
-            // identifier
+            // Identifiers: letters and underscores
             if (Character.isLetter(current) || current == '_') {
                 tokens.add(readIdentifier());
                 continue;
             }
 
-            //// Two-character tokens
+            // Two-character tokens
             if (current == ':' && peek() == '=') {
                 tokens.add(new Token(TokenType.ASSIGN, ":=", line));
                 pos += 2;
@@ -81,8 +92,8 @@ public class Tokenizer {
                 pos += 2;
                 continue;
             }
-            
-            // operators
+
+            // Single-character tokens
             switch (current) {
                 case '+':
                     tokens.add(new Token(TokenType.PLUS, "+", line));
@@ -100,25 +111,25 @@ public class Tokenizer {
                     tokens.add(new Token(TokenType.SLASH, "/", line));
                     pos++;
                     break;
-                case '<':
-                    tokens.add(new Token(TokenType.LT, "<", line));
-                    pos++;
-                    break;
                 case '>':
                     tokens.add(new Token(TokenType.GT, ">", line));
                     pos++;
                     break;
+                case '<':
+                    tokens.add(new Token(TokenType.LT, "<", line));
+                    pos++;
+                    break;
                 case '?':
                     tokens.add(new Token(TokenType.IF, "?", line));
+                    pos++;
                     break;
-                
                 case '@':
                     tokens.add(new Token(TokenType.REPEAT, "@", line));
+                    pos++;
                     break;
                 default:
-                    throw new RuntimeException(
-                        "Unexpected character '" + current + "' at line " + line
-                    );
+                    throw new RuntimeException("Unexpected character '" + current
+                            + "' at line " + line);
             }
         }
 
@@ -126,19 +137,30 @@ public class Tokenizer {
         return tokens;
     }
 
+    // ---- Helper methods ------------------------------------------------
+
+    /**
+     * Peek at the next character without advancing the position.
+     */
     private char peek() {
-        if (pos + 1 >= source.length()) return '\0';
-        return source.charAt(pos + 1);
+        if (pos + 1 < source.length()) {
+            return source.charAt(pos + 1);
+        }
+        return '\0';
     }
 
+    /**
+     * Read a string literal enclosed in double quotes.
+     */
     private Token readString() {
         int startLine = line;
-        pos++; // skip opening "
-
+        pos++; // skip opening quote
         StringBuilder sb = new StringBuilder();
 
         while (pos < source.length() && source.charAt(pos) != '"') {
-            if (source.charAt(pos) == '\n') line++;
+            if (source.charAt(pos) == '\n') {
+                line++;
+            }
             sb.append(source.charAt(pos));
             pos++;
         }
@@ -147,16 +169,19 @@ public class Tokenizer {
             throw new RuntimeException("Unterminated string at line " + startLine);
         }
 
-        pos++; // skip closing "
+        pos++; // skip closing quote
         return new Token(TokenType.STRING, sb.toString(), startLine);
     }
 
+    /**
+     * Read a numeric literal (integer or decimal).
+     */
     private Token readNumber() {
         int startLine = line;
         StringBuilder sb = new StringBuilder();
 
-        while (pos < source.length() &&
-               (Character.isDigit(source.charAt(pos)) || source.charAt(pos) == '.')) {
+        while (pos < source.length() && (Character.isDigit(source.charAt(pos))
+                || source.charAt(pos) == '.')) {
             sb.append(source.charAt(pos));
             pos++;
         }
@@ -164,13 +189,15 @@ public class Tokenizer {
         return new Token(TokenType.NUMBER, sb.toString(), startLine);
     }
 
+    /**
+     * Read an identifier (variable name or keyword).
+     */
     private Token readIdentifier() {
         int startLine = line;
         StringBuilder sb = new StringBuilder();
 
-        while (pos < source.length() &&
-              (Character.isLetterOrDigit(source.charAt(pos)) ||
-               source.charAt(pos) == '_')) {
+        while (pos < source.length() && (Character.isLetterOrDigit(source.charAt(pos))
+                || source.charAt(pos) == '_')) {
             sb.append(source.charAt(pos));
             pos++;
         }
