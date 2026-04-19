@@ -12,8 +12,9 @@ public final class BinaryOpNode implements Expression {
     private final Expression left;
     private final String operator;
     private final Expression right;
+    private final int line;
 
-    public BinaryOpNode(Expression left, String operator, Expression right) {
+    public BinaryOpNode(Expression left, String operator, Expression right,int line) {
         if (left == null || operator == null || right == null) {
             throw new IllegalArgumentException("BinaryOpNode arguments cannot be null");
         }
@@ -25,6 +26,7 @@ public final class BinaryOpNode implements Expression {
         this.left = left;
         this.operator = operator;
         this.right = right;
+        this.line = line;
     }
 
     @Override
@@ -43,7 +45,7 @@ public final class BinaryOpNode implements Expression {
                 case "*": return l * r;
                 case "/":
                     if (r == 0) {
-                        throw new RuntimeException("Division by zero");
+                        throw new RuntimeException( "Division by zero at line " + line +" (operator: '" + operator + "')");
                     }
                     return l / r;
                 case ">": return l > r;
