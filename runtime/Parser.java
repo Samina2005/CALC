@@ -194,7 +194,7 @@ public class Parser {
             String op = current().getValue();
             advance();
             Expression right = parseAddition();
-            left = new BinaryOpNode(left, op, right);
+            left = new BinaryOpNode(left, op, right,tokens.get(pos-1).getLine());
         }
 
         return left;
@@ -212,7 +212,7 @@ public class Parser {
             String op = current().getValue();
             advance();
             Expression right = parseTerm();
-            left = new BinaryOpNode(left, op, right);
+            left = new BinaryOpNode(left, op, right,tokens.get(pos-1).getLine());
         }
 
         return left;
@@ -230,7 +230,7 @@ public class Parser {
             String op = current().getValue();
             advance();
             Expression right = parsePrimary();
-            left = new BinaryOpNode(left, op, right);
+            left = new BinaryOpNode(left, op, right,tokens.get(pos-1).getLine());
         }
 
         return left;
@@ -264,7 +264,7 @@ public class Parser {
     if (token.getType() == TokenType.MINUS) {
         advance(); // consume '-'
         Expression expr = parsePrimary();
-        return new BinaryOpNode(new NumberNode(0), "-", expr);
+        return new BinaryOpNode(new NumberNode(0), "-", expr,tokens.get(pos-1).getLine());
     }
 
     switch (token.getType()) {
